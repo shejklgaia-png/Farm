@@ -11,6 +11,8 @@
 ## ゲーム
 - [貨物梱包ゲーム](games/packing/index.html)：疑似3Dの梱包と出荷。HTMLを保存しブラウザで開く。
 
+- [POWER STATION](games/power-station/index.html)：巨大な操作領域と工程別の効果音で、4工程の機械起動を楽しむゲーム。
+
 ## 開発資料
 - [開発ルール](AGENTS.md)
 - [仕様書](docs/specification.md)

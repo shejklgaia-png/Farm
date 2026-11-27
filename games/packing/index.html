@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farm | 貨物梱包</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101b22;color:#e8f0f2;font-family:system-ui,sans-serif;font-family:sans-serif;user-select:none;-webkit-user-select:none}button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}button:focus{outline:3px solid #f3ce65;outline-offset:3px}button:disabled{cursor:default}header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#20333e;border-bottom:3px solid #516674}h1{font-size:22px;margin:0;letter-spacing:2px}.count{font-size:20px;font-weight:bold;color:#ffcf66}main{max-width:1080px;margin:auto;padding:14px}#instruction{min-height:56px;padding:14px;background:#263c47;border-left:5px solid #ffcf66;font-size:20px;font-weight:bold;margin:0 0 12px}.board{display:flex;flex-wrap:wrap;gap:12px}.panel{position:relative;background:#263640;border:2px solid #536874;border-radius:9px;padding:12px;min-width:180px;flex:1 1 220px;text-align:center;overflow:hidden}.panel h2{margin:0 0 10px;font-size:18px;letter-spacing:1px}.floor{background:#14252d;min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #4e6571;border-radius:6px;padding:10px}.target{width:100%;min-height:155px;background:#14252d;border:2px dashed #637a83;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}.selected,.ready{border-color:#ffcf66!important;box-shadow:0 0 0 3px #ffcf6655}.cargo{position:relative;display:block;width:90px;height:64px;background:#b48b4e;border:3px solid #59472f;border-radius:3px;box-shadow:9px 9px 0 #645331,0 13px 13px #0005;transform:skewY(-5deg);margin:10px auto}.cargo:before{content:"";position:absolute;left:6px;right:6px;top:7px;height:10px;background:#e9bc74}.cargo:after{content:"";position:absolute;left:42%;top:0;bottom:0;width:12px;background:#77603d}.draggable{touch-action:none;-ms-touch-action:none;cursor:grab}.source{background:#304650;border:2px solid #63818b;border-radius:6px;min-width:135px;min-height:115px;padding:10px}.container{position:relative;width:112px;height:78px;margin:12px 0 6px;background:#537787;border:4px solid #17252d;border-radius:3px;box-shadow:12px 9px 0 #2e444e;transform:skewY(-5deg)}.container:before{content:"";position:absolute;left:-4px;right:-4px;top:-17px;height:24px;background:#11242e;border:5px solid #7698a6;transform:skewX(-25deg)}.container:after{content:"";position:absolute;left:8px;right:8px;bottom:8px;height:12px;background:repeating-linear-gradient(90deg,#f0c65c 0,#f0c65c 10px,#22343e 10px,#22343e 20px)}.container.loaded{background:#6b9eac}.container.loaded:before{background:#c3a26a}.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;min-height:56px}.action{background:#e5b94e;color:#1b252a;font-size:19px;font-weight:bold;border-radius:6px;min-height:52px;padding:10px 16px}.action:disabled{background:#52636a;color:#dae1e3}.stack{width:100%;min-height:145px;border:2px solid #647f8b;border-radius:6px;padding:8px;background:#172a34;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.stackrow{width:105px;height:29px;background:#718e9a;border:3px solid #263842;box-shadow:8px 4px 0 #405562;position:relative;margin:1px}.stackrow:after{content:"";position:absolute;left:15px;top:0;bottom:0;width:10px;background:#e7b94c;box-shadow:61px 0 #e7b94c}.pallet{width:130px;height:12px;background:#92734b;border:2px solid #59462e;margin-top:3px}.truck{position:relative;width:158px;height:82px;margin:8px auto 15px}.bed{position:absolute;left:0;bottom:18px;width:105px;height:35px;background:#698793;border:3px solid #17252d;border-top:5px solid #e7b94c;box-shadow:4px 5px #3a505a}.cab{position:absolute;right:0;bottom:18px;width:49px;height:56px;background:#e2b74f;border:3px solid #283942;border-radius:7px 12px 0 0}.cab:before{content:"";position:absolute;left:5px;right:5px;top:5px;height:20px;background:#233e50;border:2px solid #9cb8c2}.wheel{position:absolute;bottom:0;width:26px;height:26px;border:6px solid #0b1418;background:#869ba3;border-radius:50%}.w1{left:17px}.w2{right:9px}.ghost{position:fixed;z-index:10;pointer-events:none;padding:13px 20px;border:3px solid #ffcf66;border-radius:6px;background:#38505c;box-shadow:6px 6px #0005;color:#fff;font-weight:bold;transform:translate(-50%,-50%)}#finish{margin-top:14px;padding:24px;text-align:center;background:#29493d;border:2px solid #79b49a;border-radius:8px}#finish h2{font-size:30px;margin:0 0 10px}#finish[hidden], [hidden]{display:none!important}.note{font-size:13px;color:#c0d0d6;margin:10px 0 0}.label{font-size:17px;font-weight:bold}.inactive{opacity:.6}@media(max-width:600px){header{padding:8px 10px}main{padding:8px}.board{gap:8px}.panel{flex:1 1 145px;min-width:145px;padding:8px}.panel h2{font-size:16px}.floor,.target{min-height:140px}.actions{margin-top:8px}#instruction{font-size:18px;padding:10px}.action{font-size:16px}.truck{transform:scale(.85)}}
+</style>
+</head>
+<body>
+<header><h1>FARM / 貨物梱包</h1><div class="count" id="count">0 / 4</div></header>
+<main>
+<p id="instruction" aria-live="polite"></p>
+<div class="board">
+<section class="panel"><h2>01　荷物</h2><div class="floor"><button id="source" class="source draggable" type="button" aria-label="荷物を選ぶ"><span class="cargo"></span><span class="label">荷物</span></button></div></section>
+<section class="panel"><h2>02　梱包台</h2><button id="work" class="target" type="button" aria-label="コンテナに入れる"><span id="crate" class="container"></span><span class="label" id="method"></span></button><div id="actions" class="actions"></div></section>
+<section class="panel"><h2>03　積載</h2><button id="stack" class="stack draggable" type="button" aria-label="積荷を選ぶ"></button><div class="note">満載になったら出荷</div></section>
+<section class="panel"><h2>04　出荷</h2><button id="truck" class="target" type="button" aria-label="運搬車に積む"><span class="truck"><span class="bed"></span><span class="cab"></span><span class="wheel w1"></span><span class="wheel w2"></span></span><span class="label">運搬車</span></button></section>
+</div>
+<section id="finish" hidden><h2>出荷完了！</h2><p>4個の荷物を届けました。</p><button id="restart" class="action" type="button">もう一度</button></section>
+<p class="note">荷物をドラッグ、または荷物をタップしてから移動先をタップ。</p>
+</main>
+<script>
+(function(){
+"use strict";
+var capacity=4,count=0,phase="load",method=0,step=0,selected=null,drag=null,ghost=null,lastTouch=0;
+function el(id){return document.getElementById(id)}
+var src=el("source"),work=el("work"),stack=el("stack"),truck=el("truck"),actions=el("actions");
+var names=["蓋で梱包","バンドで梱包","カバーで梱包"];
+var labels=[["蓋を閉じる"],["左バンドを留める","右バンドを留める"],["保護カバーを閉じる"]];
+function nextMethod(){method=Math.floor(Math.random()*3);step=0}
+function valid(type){return(type==="cargo"&&phase==="load")||(type==="stack"&&phase==="ship")}
+function render(){
+el("count").textContent=count+" / "+capacity;
+el("method").textContent=phase==="load"||phase==="pack"?names[method]:"梱包完了";
+el("crate").className="container"+(phase==="pack"?" loaded":"");
+src.disabled=phase!=="load";src.className="source draggable"+(selected==="cargo"?" selected":"");
+stack.disabled=phase!=="ship";stack.className="stack draggable"+(phase==="ship"?" ready":"")+(selected==="stack"?" selected":"");
+work.className="target"+(selected==="cargo"?" ready":"");truck.className="target"+(phase==="ship"?" ready":"");
+work.disabled=phase!=="load";truck.disabled=phase!=="ship";
+stack.innerHTML="";for(var i=0;i<count;i++){var row=document.createElement("span");row.className="stackrow";stack.appendChild(row)}
+var pallet=document.createElement("span");pallet.className="pallet";stack.appendChild(pallet);
+var tally=document.createElement("span");tally.className="label";tally.textContent=count+" / "+capacity;stack.appendChild(tally);
+actions.innerHTML="";
+if(phase==="pack"){var b=document.createElement("button");b.type="button";b.className="action";b.textContent=labels[method][step];b.onclick=pack;actions.appendChild(b)}
+var instructions={load:"荷物を梱包台へ運ぼう",pack:"梱包しよう："+(labels[method][step]||""),ship:"満載！ 積荷を運搬車へ運ぼう",done:"出荷完了！ おつかれさまでした"};
+el("instruction").textContent=instructions[phase];
+el("finish").hidden=phase!=="done";
+}
+function pack(){if(phase!=="pack")return;step++;if(step>=labels[method].length){count++;selected=null;if(count===capacity){phase="ship"}else{phase="load";nextMethod()}}render()}
+function deliver(type,target){if(!valid(type))return false;if(type==="cargo"&&target===work){phase="pack";selected=null;render();return true}if(type==="stack"&&target===truck){phase="done";selected=null;render();return true}return false}
+function select(type){if(valid(type)){selected=selected===type?null:type;render()}}
+work.onclick=function(){if(selected==="cargo")deliver("cargo",work)};
+truck.onclick=function(){if(selected==="stack")deliver("stack",truck)};
+function inside(node,x,y){var r=node.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
+function start(type,x,y){if(!valid(type))return;drag={type:type,x:x,y:y,moved:false}}
+function move(x,y){if(!drag)return;if(!drag.moved&&(Math.abs(x-drag.x)+Math.abs(y-drag.y)>10)){drag.moved=true;ghost=document.createElement("div");ghost.className="ghost";ghost.textContent=drag.type==="cargo"?"荷物":"満載の積荷";document.body.appendChild(ghost)}if(ghost){ghost.style.left=x+"px";ghost.style.top=y+"px"}}
+function cleanup(){if(ghost){ghost.parentNode.removeChild(ghost);ghost=null}drag=null}
+function end(x,y){if(!drag)return;var d=drag;cleanup();if(d.moved){var target=d.type==="cargo"?work:truck;if(inside(target,x,y)){deliver(d.type,target)}else{selected=null;render()}}else{select(d.type)}}
+function bind(node,type){
+node.addEventListener("mousedown",function(e){if(Date.now()-lastTouch<700||e.button!==0)return;e.preventDefault();start(type,e.clientX,e.clientY)});
+node.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;e.preventDefault();lastTouch=Date.now();var t=e.touches[0];start(type,t.clientX,t.clientY)},{passive:false});
+node.addEventListener("click",function(e){if(e.detail===0&&Date.now()-lastTouch>700)select(type)});
+}
+bind(src,"cargo");bind(stack,"stack");
+document.addEventListener("mousemove",function(e){if(drag){e.preventDefault();move(e.clientX,e.clientY)}});
+document.addEventListener("mouseup",function(e){if(drag)end(e.clientX,e.clientY)});
+document.addEventListener("touchmove",function(e){if(drag&&e.touches.length===1){e.preventDefault();move(e.touches[0].clientX,e.touches[0].clientY)}},{passive:false});
+document.addEventListener("touchend",function(e){if(drag&&e.changedTouches.length){e.preventDefault();lastTouch=Date.now();var t=e.changedTouches[0];end(t.clientX,t.clientY)}},{passive:false});
+document.addEventListener("touchcancel",cleanup);window.addEventListener("blur",cleanup);
+el("restart").onclick=function(){cleanup();count=0;phase="load";selected=null;nextMethod();render()};
+nextMethod();render();
+})();
+</script>
+</body>
+</html>

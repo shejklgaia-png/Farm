@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>パワーステーション | Farm</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#141d29;color:#f5f8ff;font-family:system-ui,sans-serif}body{padding:10px;user-select:none;-webkit-user-select:none}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:4px solid white;outline-offset:3px}
+main{max-width:1050px;margin:auto;min-height:calc(100vh - 20px);display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:clamp(18px,3vw,30px);margin:0;letter-spacing:.05em}#sound{background:#344359;border:2px solid #71839b;border-radius:10px;min-height:48px;padding:8px 14px}
+#progress{display:flex;gap:5px;height:18px}#progress span{flex:1;border-radius:4px;background:#303d4e;border:1px solid #62748b}#progress .filled{background:#6ee7a5;border-color:#a6ffcb}
+#status{font-size:clamp(16px,3vw,25px);font-weight:bold;text-align:center;margin:0;min-height:1.5em}
+#panel{flex:1;display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;min-height:240px}
+#hit{position:relative;flex:1;width:100%;min-height:240px;border:5px solid #78879c;border-radius:24px;background:linear-gradient(145deg,#344357,#1e2938);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:15px;overflow:hidden}
+#hit:before,#hit:after{content:"";position:absolute;top:13px;width:13px;height:13px;border-radius:50%;background:#a9b5c3;box-shadow:inset 0 -4px #47566b}#hit:before{left:13px}#hit:after{right:13px}
+#switch{display:flex;align-items:center;justify-content:center;width:88%;max-width:680px;min-height:130px;flex:1;max-height:340px;border:7px solid #b7c6d2;border-radius:24px;background:linear-gradient(180deg,var(--light),var(--base) 30%,var(--dark));box-shadow:0 11px 0 #0d141e,inset 0 4px 0 rgba(255,255,255,.45);color:#111922;font-weight:900;font-size:clamp(38px,11vw,110px);transition:transform 90ms ease,box-shadow 90ms ease}
+#hit.pressed #switch,#hit:active #switch{transform:translateY(8px);box-shadow:0 3px 0 #0d141e,inset 0 4px 0 rgba(255,255,255,.25)}
+#label{font-size:clamp(22px,4vw,38px);font-weight:900;text-align:center;margin-top:8px}#cells{display:flex;gap:10px;justify-content:center}#cells i{height:18px;width:52px;background:#101821;border:2px solid #75879c;border-radius:4px}#cells i.on{background:var(--light);border-color:#fff}
+#finish{flex:1;min-height:240px;border:4px solid #81e8ac;border-radius:24px;background:#203c35;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:12px}#finish[hidden],#hit[hidden]{display:none}#finish h2{font-size:clamp(35px,8vw,70px);margin:0}#again{width:90%;max-width:580px;min-height:85px;border:3px solid #c0f3cf;background:#3c805b;border-radius:16px;font-size:clamp(24px,5vw,38px);font-weight:bold}
+#note{font-size:14px;color:#c1cedf;text-align:center;margin:0}
+@media (orientation:landscape) and (max-height:480px){body{padding:6px}main{min-height:calc(100vh - 12px);gap:5px}#panel,#hit,#finish{min-height:180px}#switch{min-height:78px;font-size:55px}#label{font-size:23px}#note{font-size:12px}}
+@media(prefers-reduced-motion:reduce){#switch{transition:none}}
+</style></head>
+<body><main><header><h1>POWER STATION</h1><button id="sound" aria-label="効果音の音量を変更">音：小</button></header>
+<div id="progress" role="progressbar" aria-label="起動進捗" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"></div>
+<p id="status" aria-live="polite"></p>
+<section id="panel"><button id="hit" aria-label="スイッチを押す"><span id="switch" aria-hidden="true"></span><span id="label"></span><span id="cells" aria-hidden="true"><i></i><i></i><i></i></span></button>
+<div id="finish" hidden><h2>起動完了！</h2><p>すべての機械が動きました。</p><button id="again">もう一度</button></div></section>
+<p id="note">広いパネルのどこを押しても反応します。</p></main>
+<script>
+(function(){
+'use strict';
+var stages=[
+{label:'電源',icon:'⏻',light:'#ffdf72',base:'#f5b82b',dark:'#b67513'},
+{label:'冷却',icon:'❄',light:'#9ceaff',base:'#32b9e9',dark:'#16709d'},
+{label:'駆動',icon:'↻',light:'#ffc49b',base:'#fa7850',dark:'#b43e27'},
+{label:'発進',icon:'▶',light:'#c0ffb0',base:'#60d65a',dark:'#268744'}
+];
+var hit=document.getElementById('hit'), sw=document.getElementById('switch'), label=document.getElementById('label'), status=document.getElementById('status'), progress=document.getElementById('progress'), finish=document.getElementById('finish'), again=document.getElementById('again'), sound=document.getElementById('sound'), cells=document.getElementById('cells').children;
+var count=0, volume=1, ac=null, master=null, active=[], visualTimer=0, finishTimer=0, finished=false;
+var levels=[0,.18,.35,.55], names=['消音','小','中','大'];
+for(var i=0;i<12;i++)progress.appendChild(document.createElement('span'));
+function audio(){
+ if(!ac){var A=window.AudioContext||window.webkitAudioContext;if(!A)return false;try{ac=new A();master=ac.createGain();master.gain.value=levels[volume];master.connect(ac.destination);}catch(e){ac=null;return false;}}
+ if(ac.state==='suspended'){var p=ac.resume();if(p&&p.catch)p.catch(function(){});}return true;
+}
+function stopVoices(){for(var i=0;i<active.length;i++){try{active[i].stop();}catch(e){}}active=[];}
+function tone(type,f1,f2,delay,duration,amp){
+ var t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+duration);g.gain.setValueAtTime(.001,t);g.gain.linearRampToValueAtTime(amp,t+.012);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g);g.connect(master);active.push(o);o.onended=function(){var n=active.indexOf(o);if(n>=0)active.splice(n,1);o.disconnect();g.disconnect();};o.start(t);o.stop(t+duration+.01);
+}
+function effect(stage,step,done){
+ if(!volume||!audio())return;
+ stopVoices();
+ if(done){[392,523,659,784].forEach(function(f,i){tone('triangle',f,f,.12*i,.26,.24);});return;}
+ var f=1+step*.08;
+ if(stage===0){tone('triangle',160*f,85*f,0,.14,.38);tone('sine',850,420,.015,.09,.25);}
+ if(stage===1){tone('sine',440*f,880*f,0,.18,.42);tone('triangle',1100,660,.055,.15,.12);}
+ if(stage===2){tone('triangle',90*f,260*f,0,.25,.38);tone('sine',180,350,.04,.19,.18);}
+ if(stage===3){tone('triangle',520*f,780*f,0,.12,.32);tone('sine',880*f,1100*f,.10,.18,.30);}
+ if(step===3){tone('sine',1047,1319,.21,.18,.16);}
+}
+function render(){
+ for(var i=0;i<12;i++)progress.children[i].className=i<count?'filled':'';
+ progress.setAttribute('aria-valuenow',count);
+ if(count===12){status.textContent='12 / 12';return;}
+ var stage=Math.floor(count/3),step=count%3,s=stages[stage];
+ hit.style.setProperty('--light',s.light);hit.style.setProperty('--base',s.base);hit.style.setProperty('--dark',s.dark);
+ sw.textContent=s.icon;label.textContent=s.label+'スイッチ';hit.setAttribute('aria-label',s.label+'スイッチを押す');
+ status.textContent='工程 '+(stage+1)+' / 4　・　'+count+' / 12';
+ for(var j=0;j<3;j++)cells[j].className=j<step?'on':'';
+}
+function showFinish(){hit.hidden=true;finish.hidden=false;again.focus();}
+function press(){
+ if(finished)return;
+ var stage=Math.floor(count/3),step=count%3+1;
+ count++;finished=count===12;effect(stage,step,finished);
+ hit.classList.add('pressed');clearTimeout(visualTimer);visualTimer=setTimeout(function(){hit.classList.remove('pressed');},140);
+ render();
+ if(finished){for(var j=0;j<3;j++)cells[j].className='on';finishTimer=setTimeout(showFinish,450);}
+}
+hit.addEventListener('click',press);
+sound.addEventListener('click',function(){volume=(volume+1)%levels.length;sound.textContent='音：'+names[volume];if(master)master.gain.setValueAtTime(levels[volume],ac.currentTime);if(volume){if(audio())effect(0,1,false);}else stopVoices();});
+again.addEventListener('click',function(){clearTimeout(finishTimer);clearTimeout(visualTimer);stopVoices();count=0;finished=false;hit.classList.remove('pressed');finish.hidden=true;hit.hidden=false;render();hit.focus();});
+document.addEventListener('visibilitychange',function(){if(document.hidden)stopVoices();});
+render();
+})();
+</script></body></html>

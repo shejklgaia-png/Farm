@@ -13,6 +13,8 @@
 
 - [POWER STATION](games/power-station/index.html)：巨大な操作領域と工程別の効果音で、4工程の機械起動を楽しむゲーム。
 
+- [WALL SMASH](games/wall-smash/index.html)：筋肉質のキャラクターで壁を12回パンチして壊す、単体HTMLの軽量3D試作。
+
 ## 開発資料
 - [開発ルール](AGENTS.md)
 - [仕様書](docs/specification.md)
